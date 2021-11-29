@@ -20,16 +20,16 @@ end
 
 desc 'Run the webserver and application and restart if code changes'
 task :rerun do
-  sh "rerun -c --ignore 'coverage/*' --ignore 'repostore/*' -- bundle exec puma"
+  sh "rerun -c --ignore 'coverage/*' --ignore 'repostore/*' -- rake run"
 end
 
 desc 'Run web app in default (dev) mode'
-task run: ['run:default']
+task run: ['run:dev']
 
 namespace :run do
   desc 'Run API in dev mode'
-  task :default do
-    sh 'rerun -c "bundle exec puma -p 9090"'
+  task :dev do
+    sh 'bundle exec puma -p 9090'
   end
 
   desc 'Run API in test mode'
