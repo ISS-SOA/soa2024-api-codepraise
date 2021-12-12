@@ -45,6 +45,9 @@ gem 'hirb'
 # gem 'hirb-unicode' # incompatible with new rubocop
 gem 'sequel', '~> 5.0'
 
+# Asynchronicity
+gem 'concurrent-ruby', '~> 1.1'
+
 group :development, :test do
   gem 'sqlite3', '~> 1.0'
 end
