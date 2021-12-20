@@ -9,7 +9,6 @@ end
 
 desc 'Run unit and integration tests'
 Rake::TestTask.new(:spec) do |t|
-  puts 'Make sure worker is running in separate process'
   t.pattern = 'spec/tests/**/*_spec.rb'
   t.warning = false
 end
@@ -19,23 +18,23 @@ task :respec do
   sh "rerun -c 'rake spec' --ignore 'coverage/*' --ignore 'repostore/*'"
 end
 
-desc 'Run the webserver and application and restart if code changes'
-task :rerun do
-  sh "rerun -c --ignore 'coverage/*' --ignore 'repostore/*' -- rake run"
-end
-
 desc 'Run web app in default (dev) mode'
 task run: ['run:dev']
+
+desc 'Keep restarting web app in dev mode upon changes'
+task :rerun do
+  sh "rerun -c --ignore 'coverage/*' --ignore 'repostore/*' -- bundle exec puma -p 9090"
+end
 
 namespace :run do
   desc 'Run API in dev mode'
   task :dev do
-    sh 'bundle exec puma -p 9090'
+    sh 'RACK_ENV=development bundle exec puma config.ru -p 9090'
   end
 
   desc 'Run API in test mode'
   task :test do
-    sh 'RACK_ENV=test bundle exec puma -p 9090'
+    sh 'RACK_ENV=test bundle exec puma config.ru -p 9090'
   end
 end
 

@@ -20,8 +20,9 @@ module CodePraise
       CLONE_ERR = 'Could not clone this project'
       NO_FOLDER_ERR = 'Could not find that folder'
       SIZE_ERR = 'Project too large to analyze'
-      PROCESSING_MSG = 'Processing the summary request'
+      PROCESSING_MSG = 'Appraising the project'
 
+      # input hash keys expected: :project, :requested, :config
       def find_project_details(input)
         input[:project] = Repository::For.klass(Entity::Project).find_full_name(
           input[:requested].owner_name, input[:requested].project_name
@@ -40,7 +41,7 @@ module CodePraise
         if input[:project].too_large?
           Failure(Response::ApiResult.new(status: :bad_request, message: SIZE_ERR))
         else
-          input[:gitrepo] = GitRepo.new(input[:project])
+          input[:gitrepo] = GitRepo.new(input[:project], input[:config])
           Success(input)
         end
       end
@@ -48,11 +49,13 @@ module CodePraise
       def request_cloning_worker(input)
         return Success(input) if input[:gitrepo].exists_locally?
 
-        Messaging::Queue
-          .new(App.config.CLONE_QUEUE_URL, App.config)
-          .send(Representer::Project.new(input[:project]).to_json)
+        Messaging::Queue.new(App.config.CLONE_QUEUE_URL, App.config)
+          .send(clone_request_json(input))
 
-        Failure(Response::ApiResult.new(status: :processing, message: PROCESSING_MSG))
+          Failure(Response::ApiResult.new(
+            status: :processing,
+            message: { request_id: input[:request_id], msg: PROCESSING_MSG }
+          ))
       rescue StandardError => e
         log_error(e)
         Failure(Response::ApiResult.new(status: :internal_error, message: CLONE_ERR))
@@ -79,6 +82,12 @@ module CodePraise
 
       def log_error(error)
         App.logger.error [error.inspect, error.backtrace].flatten.join("\n")
+      end
+
+      def clone_request_json(input)
+        Response::CloneRequest.new(input[:project], input[:request_id])
+          .then { Representer::CloneRequest.new(_1) }
+          .then(&:to_json)
       end
     end
   end
