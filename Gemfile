@@ -11,6 +11,7 @@ gem 'rake', '~> 13.0'
 
 # PRESENTATION LAYER
 gem 'multi_json', '~> 1.15'
+gem 'ostruct', '~> 0.0'
 gem 'roar', '~> 1.1'
 
 # APPLICATION LAYER
