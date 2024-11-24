@@ -11,6 +11,7 @@ gem 'rake', '~> 13.0'
 
 # PRESENTATION LAYER
 gem 'multi_json', '~> 1.15'
+gem 'ostruct', '~> 0.0'
 gem 'roar', '~> 1.1'
 
 # APPLICATION LAYER
@@ -24,6 +25,11 @@ gem 'roda', '~> 3.0'
 gem 'dry-monads', '~> 1.4'
 gem 'dry-transaction', '~> 0.13'
 gem 'dry-validation', '~> 1.7'
+
+# Caching
+gem 'rack-cache', '~> 1.13'
+gem 'redis', '~> 4.8'
+gem 'redis-rack-cache', '~> 2.2'
 
 # DOMAIN LAYER
 # Validation
