@@ -14,7 +14,7 @@ module CodePraise
 
       # Email address defines uniqueness
       def ==(other)
-        (email == other.email) || (username == other.username)
+        (email == other.email) && (username == other.username)
       end
 
       # Redefine hashing (hash uses eql?)

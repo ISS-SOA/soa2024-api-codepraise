@@ -44,21 +44,23 @@ module CodePraise
         to_add = find_contributor(contributor)
         @share[to_add.username] += count
         @contributors.add(to_add)
+        self
       end
 
       def +(other)
-        lz = (self.contributors + other.contributors).sort { _1.username <=> _2.username }
-        rz = (other.contributors + self.contributors).sort { _1.username <=> _2.username }
-        zipped = lz.zip(rz)
-        final = zipped.map { |l, r| l.username >= r.username ? l : r }
+        unique_contributors = Value::Contributors
+          .new(contributors + other.contributors)
+          .group_by_identity
 
-        (final)
-          .each_with_object(Value::CreditShare.new) do |contributor, total|
-            total.add_credit(
-              contributor,
-              self.by_contributor(contributor) + other.by_contributor(contributor)
-            )
-          end
+        shares = self.share.merge(other.share) do |_k, v1, v2|
+          v1 + v2
+        end
+
+        unique_contributors.each_with_object(Value::CreditShare.new) do |group, final|
+          group_names = group.map(&:username).uniq
+          group_total = group_names.sum { |name| shares[name] }
+          final.add_credit(group.first, group_total)
+        end
       end
 
       def by_email(email)

@@ -15,6 +15,8 @@ module CodePraise
         Value::CodeLanguage::Javascript,
         Value::CodeLanguage::Css,
         Value::CodeLanguage::Html,
+        Value::CodeLanguage::Slim,
+        Value::CodeLanguage::Erb,
         Value::CodeLanguage::Markdown
       ].freeze
 
