@@ -35,9 +35,15 @@ describe 'Test Git Commands Mapper and Gateway' do
     _(%w[init.rb README.md]).must_include first_file.file_path.filename
     _(root.subfolders.first.path.size).must_be :>, 0
 
-    _(root.subfolders.map(&:credit_share).reduce(&:+) +
-      root.base_files.map(&:credit_share).reduce(&:+))
-      .must_equal(root.credit_share)
+    subfolders_plus_basefiles =
+      root.subfolders.map(&:credit_share).reduce(&:+) +
+      root.base_files.map(&:credit_share).reduce(&:+)
+
+    _(subfolders_plus_basefiles.share.values.sort)
+      .must_equal(root.credit_share.share.values.sort)
+
+    _(subfolders_plus_basefiles.contributors.map(&:email).sort)
+      .must_equal(root.credit_share.contributors.map(&:email).sort)
   end
 
   it 'HAPPY: should get accurate contributions summary for specific folder' do

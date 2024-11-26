@@ -51,9 +51,15 @@ describe 'AppraiseProject Service Integration Test' do
       _(%w[init.rb README.md]).must_include first_file.file_path.filename
       _(folder.subfolders.first.path.size).must_be :>, 0
 
-      _(folder.subfolders.map(&:credit_share).reduce(&:+) +
-        folder.base_files.map(&:credit_share).reduce(&:+))
-        .must_equal(folder.credit_share)
+      subfolders_plus_basefiles =
+        folder.subfolders.map(&:credit_share).reduce(&:+) +
+        folder.base_files.map(&:credit_share).reduce(&:+)
+
+      _(subfolders_plus_basefiles.share.values.sort)
+        .must_equal(folder.credit_share.share.values.sort)
+
+      _(subfolders_plus_basefiles.contributors.map(&:email).sort)
+        .must_equal(folder.credit_share.contributors.map(&:email).sort)
     end
 
     it 'SAD: should not give contributions for non-existent project' do
