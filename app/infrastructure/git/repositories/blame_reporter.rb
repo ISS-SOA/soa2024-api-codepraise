@@ -29,7 +29,7 @@ module CodePraise
           if @folder_name.empty?
             @local.files
           else
-            @local.files.select { _1.start_with?("#{@folder_name}/") }
+            @local.files.select { |file| file.start_with? "#{@folder_name}/" }
           end
       end
     end
